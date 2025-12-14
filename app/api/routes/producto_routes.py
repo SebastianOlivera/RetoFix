@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
-from app.api.deps import get_db
+from app.api.dependencies import get_db
 from app.schemas import ProductoCreate, ProductoUpdate, ProductoResponse
 from app.services import producto_service as svc
 
