@@ -1,0 +1,31 @@
+name: PR Checks QR Backend
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  pr-checks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Build Docker image (no push)
+        run: |
+          docker build -t qr-backend-test:${{ github.sha }} .
+
+      - name: Run gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        with:
+          args: detect --source . --no-git -v
+
+      - name: Run Trivy image scan
+        uses: aquasecurity/trivy-action@0.20.0
+        with:
+          image-ref: qr-backend-test:${{ github.sha }}
+          vuln-type: 'os,library'
+          format: 'table'
+          exit-code: '0'
+          ignore-unfixed: true

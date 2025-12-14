@@ -1,0 +1,16 @@
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+env/
+ENV/
+.env
+.env.*
+reto_xmas.db
+qr_codes/
+kmz_files/
+.DS_Store
+.vscode/
+.idea/
