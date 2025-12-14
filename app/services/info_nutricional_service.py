@@ -1,34 +1,25 @@
 from sqlalchemy.orm import Session
 
 from app.models.info_nutricional import InfoNutricional
+from app.repositories import info_nutricional_repository
 from app.schemas.info_nutricional import InfoNutricionalCreate, InfoNutricionalUpdate
 
 
 def create_info_nutricional(db: Session, data: InfoNutricionalCreate):
-    info = InfoNutricional(**data.model_dump())
-    db.add(info)
-    db.commit()
-    db.refresh(info)
-    return info
+    return info_nutricional_repository.create(db, data.model_dump())
 
 
 def get_info_nutricional(db: Session):
-    return db.query(InfoNutricional).all()
+    return info_nutricional_repository.list_all(db)
 
 
 def get_info_nutricional_by_id(db: Session, info_id: int):
-    return db.query(InfoNutricional).filter(InfoNutricional.infoid == info_id).first()
+    return info_nutricional_repository.get_by_id(db, info_id)
 
 
 def update_info_nutricional(db: Session, info: InfoNutricional, data: InfoNutricionalUpdate):
-    for field, value in data.model_dump(exclude_unset=True).items():
-        setattr(info, field, value)
-
-    db.commit()
-    db.refresh(info)
-    return info
+    return info_nutricional_repository.update(db, info, data.model_dump(exclude_unset=True))
 
 
 def delete_info_nutricional(db: Session, info: InfoNutricional):
-    db.delete(info)
-    db.commit()
+    info_nutricional_repository.delete(db, info)

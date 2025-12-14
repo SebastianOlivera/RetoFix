@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 
 from app.models.usuario import Usuario
+from app.repositories import usuario_repository
 from app.schemas.schemas import UsuarioCreate, UsuarioPatch, UsuarioUpdatePut
 
 # -------------------------------------------------
@@ -31,15 +32,15 @@ def _verify_password(plain: str, hashed: str) -> bool:
 # queries
 # -------------------------
 def list_all(db: Session):
-    return db.query(Usuario).all()
+    return usuario_repository.list_all(db)
 
 
 def get_by_id(db: Session, usuarioid: int):
-    return db.query(Usuario).filter(Usuario.usuarioid == usuarioid).first()
+    return usuario_repository.get_by_id(db, usuarioid)
 
 
 def get_by_mail(db: Session, mail: str):
-    return db.query(Usuario).filter(Usuario.mail == mail).first()
+    return usuario_repository.get_by_mail(db, mail)
 
 
 # -------------------------
@@ -56,10 +57,7 @@ def create(db: Session, payload: UsuarioCreate):
         passwordhash=_hash_password(payload.password),
     )
 
-    db.add(usuario)
-    db.commit()
-    db.refresh(usuario)
-    return usuario
+    return usuario_repository.create(db, usuario)
 
 
 def update(db: Session, usuarioid: int, payload: UsuarioPatch):
@@ -80,9 +78,7 @@ def update(db: Session, usuarioid: int, payload: UsuarioPatch):
     if payload.password is not None:
         usuario.passwordhash = _hash_password(payload.password)
 
-    db.commit()
-    db.refresh(usuario)
-    return usuario
+    return usuario_repository.update(db, usuario)
 
 
 def delete(db: Session, usuarioid: int):
@@ -90,8 +86,7 @@ def delete(db: Session, usuarioid: int):
     if not usuario:
         return False
 
-    db.delete(usuario)
-    db.commit()
+    usuario_repository.delete(db, usuario)
     return True
 
 
@@ -123,6 +118,4 @@ def update_put(db: Session, usuarioid: int, payload: UsuarioUpdatePut):
     usuario.rol = payload.rol
     usuario.passwordhash = _hash_password(payload.password)
 
-    db.commit()
-    db.refresh(usuario)
-    return usuario
+    return usuario_repository.update(db, usuario)
