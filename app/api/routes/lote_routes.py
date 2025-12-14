@@ -2,7 +2,7 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.api.deps import get_db
+from app.api.dependencies import get_db
 from app.schemas.lote import LoteCreate, LoteUpdate, LoteResponse
 from app.services import lote_service
 

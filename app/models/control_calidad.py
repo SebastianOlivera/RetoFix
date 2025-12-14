@@ -10,7 +10,7 @@ class ControlDeCalidad(Base):
     __tablename__ = "controles_de_calidad"
 
     id = Column(Integer, primary_key=True, index=True)
-    lote_id = Column(Integer, ForeignKey("lotes.id"), nullable=False, unique=True)
+    lote_id = Column(Integer, ForeignKey("lote.id"), nullable=False, unique=True)
     estado = Column(String, nullable=False)
     observaciones = Column(Text)
     inspector = Column(String)

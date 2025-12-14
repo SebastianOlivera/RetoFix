@@ -1,15 +1,14 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
-from app.db.connection import get_db
+from app.api.dependencies import get_db
 from app.services import campo_service
-from app.db.connection import SessionLocal
 
 
 router = APIRouter(prefix="/campos", tags=["Campos"])
 
 
-@router.get("/campos")
+@router.get("")
 def listar_campos(db: Session = Depends(get_db)):
     return campo_service.get_campos(db)
 
@@ -40,14 +39,6 @@ def crear_campo(
 def eliminar_campo(campoid: int, db: Session = Depends(get_db)):
     campo = campo_service.get_campo(db, campoid)
     campo_service.delete_campo(db, campo)
-
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 # PUT → reemplazo total

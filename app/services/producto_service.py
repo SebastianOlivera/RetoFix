@@ -3,8 +3,10 @@ from sqlalchemy.orm import Session
 
 from app.repositories.producto_repository import (
     create_producto,
+    delete_producto,
     get_producto,
     list_productos,
+    update_producto,
 )
 from app.schemas.schemas import (
     ProductoCreate,
@@ -17,6 +19,7 @@ from app.schemas.schemas import (
 
 def create(db: Session, payload: ProductoCreate):
     return create_producto(
+        db=db,
         nombrecomercial=payload.nombrecomercial,
         descripcion=payload.descripcion,
         imagenurl=payload.imagenurl,
@@ -25,7 +28,6 @@ def create(db: Session, payload: ProductoCreate):
         mododeuso=payload.mododeuso,
         pdfurl=payload.pdfurl,
         claim=payload.claim,
-        db=db,
     )
 
 
@@ -45,12 +47,7 @@ def update(db: Session, productoid: int, payload: ProductoUpdate):
     if not producto:
         return None
 
-    for field, value in payload.model_dump(exclude_unset=True).items():
-        setattr(producto, field, value)
-
-    db.commit()
-    db.refresh(producto)
-    return producto
+    return update_producto(db, producto, **payload.model_dump(exclude_unset=True))
 
 
 def delete(db: Session, productoid: int) -> bool:
@@ -58,8 +55,7 @@ def delete(db: Session, productoid: int) -> bool:
     if not producto:
         return False
 
-    db.delete(producto)
-    db.commit()
+    delete_producto(db, producto)
     return True
 
 
