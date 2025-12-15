@@ -8,11 +8,7 @@ from app.repositories.producto_repository import (
     list_productos,
     update_producto,
 )
-from app.schemas.schemas import (
-    ProductoCreate,
-    ProductoUpdate,
-    ProductoResponse,
-)
+from app.schemas.producto import ProductoCreate, ProductoUpdate, ProductoResponse
 
 
 # ========= CRUD =========
