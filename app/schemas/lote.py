@@ -1,7 +1,7 @@
+from datetime import date
 from typing import Optional
-from pydantic import BaseModel
-from datetime import datetime, date
 
+from pydantic import BaseModel
 
 
 class LoteCreate(BaseModel):
@@ -11,12 +11,14 @@ class LoteCreate(BaseModel):
     fechaprocesamiento: Optional[date] = None
     fechavencimiento: Optional[date] = None
 
-class LoteUpdate(BaseModel): 
+
+class LoteUpdate(BaseModel):
     campoid: Optional[int] = None
     fechasiembra: Optional[date] = None
     fechacosecha: Optional[date] = None
     fechaprocesamiento: Optional[date] = None
     fechavencimiento: Optional[date] = None
+
 
 class LoteResponse(BaseModel):
     loteid: int
@@ -25,4 +27,6 @@ class LoteResponse(BaseModel):
     fechacosecha: Optional[date]
     fechaprocesamiento: Optional[date]
     fechavencimiento: Optional[date]
-    
+
+    class Config:
+        from_attributes = True
