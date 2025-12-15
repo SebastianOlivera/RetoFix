@@ -8,8 +8,9 @@ class CodigoQR(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     qr_id = Column(String, unique=True, nullable=False, index=True)
-    lote_id = Column(Integer, ForeignKey("lotes.id"), nullable=False)
+    # Lote foreign key aligns with the actual table/column names
+    lote_id = Column(Integer, ForeignKey("lote.loteid"), nullable=False)
     qr_image_path = Column(String)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
-    lote = relationship("Lote", back_populates="codigos_qr")
+    lote = relationship("Lote", backref="codigos_qr")

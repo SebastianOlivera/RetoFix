@@ -13,12 +13,12 @@ from app.services import info_nutricional_service
 router = APIRouter(prefix="/info-nutricional", tags=["Info Nutricional"])
 
 
-@router.post("", response_model=InfoNutricionalResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=InfoNutricionalResponse, status_code=status.HTTP_201_CREATED)
 def crear_info_nutricional(payload: InfoNutricionalCreate, db: Session = Depends(get_db)):
     return info_nutricional_service.create_info_nutricional(db, payload)
 
 
-@router.get("", response_model=List[InfoNutricionalResponse])
+@router.get("/", response_model=List[InfoNutricionalResponse])
 def listar_info_nutricional(db: Session = Depends(get_db)):
     return info_nutricional_service.get_info_nutricional(db)
 

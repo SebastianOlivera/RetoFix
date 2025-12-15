@@ -8,9 +8,10 @@ from app.repositories.producto_repository import (
     list_productos,
     update_producto,
 )
-from app.schemas.schemas import (
+from app.schemas.producto import (
     ProductoCreate,
     ProductoUpdate,
+    ProductoUpdatePut,
     ProductoResponse,
 )
 
@@ -40,6 +41,14 @@ def list_all(db: Session, categoria: Optional[str] = None):
 
 def get_by_id(db: Session, productoid: int):
     return get_producto(db, productoid)
+
+
+def update_put(db: Session, productoid: int, payload: ProductoUpdatePut):
+    producto = get_producto(db, productoid)
+    if not producto:
+        return None
+
+    return update_producto(db, producto, **payload.model_dump())
 
 
 def update(db: Session, productoid: int, payload: ProductoUpdate):

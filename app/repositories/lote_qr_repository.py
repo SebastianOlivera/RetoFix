@@ -1,28 +1,23 @@
-import shutil
-from datetime import datetime
-from pathlib import Path
-from typing import Iterable
+from typing import Iterable, Optional
+from datetime import date
 
-from fastapi import UploadFile
 from sqlalchemy.orm import Session
 
 from app.models import CodigoQR, Lote
 
 
 def create_lote(
-    numero_lote: str,
-    producto_id: int,
-    cantidad: int,
-    campo_nombre: str | None,
-    fecha_produccion: datetime,
     db: Session,
+    fechasiembra: Optional[date] = None,
+    fechacosecha: Optional[date] = None,
+    fechaprocesamiento: Optional[date] = None,
+    fechavencimiento: Optional[date] = None,
 ) -> Lote:
     lote = Lote(
-        numero_lote=numero_lote,
-        producto_id=producto_id,
-        cantidad=cantidad,
-        campo_nombre=campo_nombre,
-        fecha_produccion=fecha_produccion,
+        fechasiembra=fechasiembra,
+        fechacosecha=fechacosecha,
+        fechaprocesamiento=fechaprocesamiento,
+        fechavencimiento=fechavencimiento,
     )
     db.add(lote)
     db.flush()
@@ -51,17 +46,4 @@ def get_qr_by_id(qr_id: str, db: Session) -> CodigoQR | None:
 
 
 def get_lote(lote_id: int, db: Session) -> Lote | None:
-    return db.query(Lote).filter(Lote.id == lote_id).first()
-
-
-def save_kmz(lote: Lote, file: UploadFile, db: Session) -> Path:
-    kmz_dir = Path("kmz_files")
-    kmz_dir.mkdir(exist_ok=True)
-
-    file_path = kmz_dir / f"lote_{lote.id}_{file.filename}"
-    with file_path.open("wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-
-    lote.kmz_path = str(file_path)
-    db.commit()
-    return file_path
+    return db.query(Lote).filter(Lote.loteid == lote_id).first()

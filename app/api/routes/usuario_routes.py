@@ -7,14 +7,14 @@ from app.services import usuario_service
 
 router = APIRouter(prefix="/usuarios", tags=["Usuarios"])
 
-@router.post("", response_model=UsuarioOut, status_code=201)
+@router.post("/", response_model=UsuarioOut, status_code=201)
 def crear_usuario(payload: UsuarioCreate, db: Session = Depends(get_db)):
     try:
         return usuario_service.create(db, payload)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@router.get("", response_model=list[UsuarioOut])
+@router.get("/", response_model=list[UsuarioOut])
 def listar_usuarios(db: Session = Depends(get_db)):
     return usuario_service.list_all(db)
 

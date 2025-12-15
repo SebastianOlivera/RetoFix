@@ -25,11 +25,6 @@ def create_campo(db: Session, payload: dict):
 
 
 def delete_campo(db: Session, campo: Campo):
-    """
-    Placeholder de regla de negocio:
-    si en el futuro el campo tiene lotes, acá se valida.
-    """
-    # PLACEHOLDER LOTE
     if hasattr(campo, "lotes") and campo.lotes:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,

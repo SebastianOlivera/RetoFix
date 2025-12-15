@@ -16,7 +16,11 @@ def list_all(db: Session) -> list[InfoNutricional]:
 
 
 def get_by_id(db: Session, info_id: int) -> InfoNutricional | None:
-    return db.query(InfoNutricional).filter(InfoNutricional.infoid == info_id).first()
+    return (
+        db.query(InfoNutricional)
+        .filter(InfoNutricional.infonutricionalid == info_id)
+        .first()
+    )
 
 
 def update(db: Session, info: InfoNutricional, data: dict) -> InfoNutricional:

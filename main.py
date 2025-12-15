@@ -8,7 +8,9 @@ from app.api.routes import (
     lote_routes,
     producto_routes,
     public_routes,
+    qr_routes,
     usuario_routes,
+    producto_lote_routes,
 )
 from app.db.connection import Base, engine
 
@@ -33,4 +35,6 @@ app.include_router(public_routes.router)
 app.include_router(campo_routes.router)
 app.include_router(info_nutricional_routes.router)
 app.include_router(control_calidad_routes.router)
+app.include_router(qr_routes.router)
+app.include_router(producto_lote_routes.router)
 

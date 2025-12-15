@@ -3,7 +3,7 @@ from passlib.context import CryptContext
 
 from app.models.usuario import Usuario
 from app.repositories import usuario_repository
-from app.schemas.schemas import UsuarioCreate, UsuarioPatch, UsuarioUpdatePut
+from app.schemas.usuario import UsuarioCreate, UsuarioPatch, UsuarioUpdatePut
 
 # -------------------------------------------------
 # Password hashing
@@ -79,6 +79,11 @@ def update(db: Session, usuarioid: int, payload: UsuarioPatch):
         usuario.passwordhash = _hash_password(payload.password)
 
     return usuario_repository.update(db, usuario)
+
+
+def patch(db: Session, usuarioid: int, payload: UsuarioPatch):
+    """Alias de actualización parcial para mantener consistencia con las rutas PATCH."""
+    return update(db, usuarioid, payload)
 
 
 def delete(db: Session, usuarioid: int):

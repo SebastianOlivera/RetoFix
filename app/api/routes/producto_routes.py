@@ -4,7 +4,12 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 
 from app.api.dependencies import get_db
-from app.schemas import ProductoCreate, ProductoUpdate, ProductoResponse
+from app.schemas import (
+    ProductoCreate,
+    ProductoUpdate,
+    ProductoUpdatePut,
+    ProductoResponse,
+)
 from app.services import producto_service as svc
 
 router = APIRouter(prefix="/productos", tags=["Productos"])
@@ -29,8 +34,20 @@ def obtener_producto(productoid: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Producto no encontrado")
     return svc.serialize_producto(p)
 
+@router.put("/{productoid}", response_model=ProductoResponse)
+def reemplazar_producto(
+    productoid: int, payload: ProductoUpdatePut, db: Session = Depends(get_db)
+):
+    p = svc.update_put(db, productoid, payload)
+    if not p:
+        raise HTTPException(status_code=404, detail="Producto no encontrado")
+    return svc.serialize_producto(p)
+
+
 @router.patch("/{productoid}", response_model=ProductoResponse)
-def actualizar_producto(productoid: int, payload: ProductoUpdate, db: Session = Depends(get_db)):
+def actualizar_producto(
+    productoid: int, payload: ProductoUpdate, db: Session = Depends(get_db)
+):
     p = svc.update(db, productoid, payload)
     if not p:
         raise HTTPException(status_code=404, detail="Producto no encontrado")
