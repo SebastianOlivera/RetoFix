@@ -61,14 +61,12 @@ class ProductoResponse(BaseModel):
 
 
 class LoteCreate(BaseModel):
-    campoid: int
     fechasiembra: Optional[date] = None
     fechacosecha: Optional[date] = None
     fechaprocesamiento: Optional[date] = None
     fechavencimiento: Optional[date] = None
 
-class LoteUpdate(BaseModel): 
-    campoid: Optional[int] = None
+class LoteUpdate(BaseModel):
     fechasiembra: Optional[date] = None
     fechacosecha: Optional[date] = None
     fechaprocesamiento: Optional[date] = None
@@ -76,7 +74,6 @@ class LoteUpdate(BaseModel):
 
 class LoteResponse(BaseModel):
     loteid: int
-    campoid: int
     fechasiembra: Optional[date]
     fechacosecha: Optional[date]
     fechaprocesamiento: Optional[date]
