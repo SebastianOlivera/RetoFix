@@ -22,7 +22,6 @@ from .controlDeCalidad import (
     ControlCalidadResponse,
 )
 from .cultivo import CultivoBase, CultivoCreate, CultivoUpdate, CultivoResponse
-from .user import UserCreate
 
 __all__ = [
     "UsuarioBase",
@@ -53,5 +52,4 @@ __all__ = [
     "CultivoCreate",
     "CultivoUpdate",
     "CultivoResponse",
-    "UserCreate",
 ]
