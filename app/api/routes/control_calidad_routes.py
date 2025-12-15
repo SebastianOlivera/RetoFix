@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 from app.api.dependencies import get_db
-from app.schemas.schemas import (
+from app.schemas.controlDeCalidad import (
     ControlCalidadCreate,
     ControlCalidadResponse,
     ControlCalidadUpdate,

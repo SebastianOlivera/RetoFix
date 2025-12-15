@@ -1,27 +1,35 @@
 from typing import Optional
+
 from pydantic import BaseModel
 
 
 class InfoNutricionalBase(BaseModel):
-    producto: Optional[str] = None
-    porcion: Optional[str] = None
-    calorias: Optional[str] = None
-    proteinas: Optional[str] = None
-    grasas: Optional[str] = None
-    carbohidratos: Optional[str] = None
-    sodio: Optional[str] = None
+    productoid: int
+    calorias: Optional[float] = None
+    proteinas: Optional[float] = None
+    grasas: Optional[float] = None
+    carbohidratos: Optional[float] = None
+    vitaminas: Optional[str] = None
+    minerales: Optional[str] = None
+    beneficios: Optional[str] = None
 
 
 class InfoNutricionalCreate(InfoNutricionalBase):
     pass
 
 
-class InfoNutricionalUpdate(InfoNutricionalBase):
-    pass
+class InfoNutricionalUpdate(BaseModel):
+    calorias: Optional[float] = None
+    proteinas: Optional[float] = None
+    grasas: Optional[float] = None
+    carbohidratos: Optional[float] = None
+    vitaminas: Optional[str] = None
+    minerales: Optional[str] = None
+    beneficios: Optional[str] = None
 
 
 class InfoNutricionalResponse(InfoNutricionalBase):
-    infoid: int
+    infonutricionalid: int
 
     class Config:
         from_attributes = True

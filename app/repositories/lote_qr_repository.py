@@ -15,6 +15,7 @@ def create_lote(
     cantidad: int,
     campo_nombre: str | None,
     fecha_produccion: datetime,
+    campoid: int,
     db: Session,
 ) -> Lote:
     lote = Lote(
@@ -23,6 +24,7 @@ def create_lote(
         cantidad=cantidad,
         campo_nombre=campo_nombre,
         fecha_produccion=fecha_produccion,
+        campoid=campoid,
     )
     db.add(lote)
     db.flush()
@@ -51,14 +53,14 @@ def get_qr_by_id(qr_id: str, db: Session) -> CodigoQR | None:
 
 
 def get_lote(lote_id: int, db: Session) -> Lote | None:
-    return db.query(Lote).filter(Lote.id == lote_id).first()
+    return db.query(Lote).filter(Lote.loteid == lote_id).first()
 
 
 def save_kmz(lote: Lote, file: UploadFile, db: Session) -> Path:
     kmz_dir = Path("kmz_files")
     kmz_dir.mkdir(exist_ok=True)
 
-    file_path = kmz_dir / f"lote_{lote.id}_{file.filename}"
+    file_path = kmz_dir / f"lote_{lote.loteid}_{file.filename}"
     with file_path.open("wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
