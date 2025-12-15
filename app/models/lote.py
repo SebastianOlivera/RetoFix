@@ -2,6 +2,7 @@ from sqlalchemy import Column, Date, Integer
 
 from app.db.connection import Base
 
+from app.db.connection import Base
 
 class Lote(Base):
     __tablename__ = "lote"
