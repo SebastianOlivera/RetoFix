@@ -25,6 +25,17 @@ class ProductoUpdate(BaseModel):
     claim: Optional[str] = None
 
 
+class ProductoUpdatePut(BaseModel):
+    nombrecomercial: str
+    descripcion: Optional[str] = None
+    imagenurl: Optional[str] = None
+    categoria: Optional[str] = None
+    porciones: Optional[int] = None
+    mododeuso: Optional[str] = None
+    pdfurl: Optional[str] = None
+    claim: Optional[str] = None
+
+
 class ProductoResponse(BaseModel):
     productoid: int
     nombrecomercial: str

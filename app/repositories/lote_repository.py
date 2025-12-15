@@ -1,9 +1,6 @@
 from sqlalchemy.orm import Session
 
 from app.models.lote import Lote
-from sqlalchemy.orm import Session
-
-from app.models.lote import Lote
 
 
 def create(db: Session, data: dict) -> Lote:

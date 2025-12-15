@@ -9,11 +9,12 @@ from app.services import lote_service
 router = APIRouter(prefix="/lotes", tags=["Lotes"])
 
 
-@router.post("", response_model=LoteResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=LoteResponse, status_code=status.HTTP_201_CREATED)
 def crear_lote(payload: LoteCreate, db: Session = Depends(get_db)):
     return lote_service.create_Lote(db, payload)
 
-@router.get("", response_model=List[LoteResponse])
+
+@router.get("/", response_model=List[LoteResponse])
 def listar_lotes(db: Session = Depends(get_db)):
     return lote_service.get_lotes(db)
 

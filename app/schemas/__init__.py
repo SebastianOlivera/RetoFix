@@ -5,7 +5,12 @@ from .usuario import (
     UsuarioPatch,
     UsuarioOut,
 )
-from .producto import ProductoCreate, ProductoUpdate, ProductoResponse
+from .producto import (
+    ProductoCreate,
+    ProductoUpdate,
+    ProductoUpdatePut,
+    ProductoResponse,
+)
 from .lote import LoteCreate, LoteUpdate, LoteResponse
 from .codigo_qr import CodigoQRResponse
 from .campo import CampoBase, CampoCreate, CampoUpdate, CampoResponse
@@ -22,6 +27,7 @@ from .controlDeCalidad import (
     ControlCalidadResponse,
 )
 from .cultivo import CultivoBase, CultivoCreate, CultivoUpdate, CultivoResponse
+from .producto_lote import ProductoLoteRespuesta, ProductoLoteCambio
 
 __all__ = [
     "UsuarioBase",
@@ -31,6 +37,7 @@ __all__ = [
     "UsuarioOut",
     "ProductoCreate",
     "ProductoUpdate",
+    "ProductoUpdatePut",
     "ProductoResponse",
     "LoteCreate",
     "LoteUpdate",
@@ -52,4 +59,6 @@ __all__ = [
     "CultivoCreate",
     "CultivoUpdate",
     "CultivoResponse",
+    "ProductoLoteRespuesta",
+    "ProductoLoteCambio",
 ]

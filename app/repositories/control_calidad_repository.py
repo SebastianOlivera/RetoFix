@@ -14,6 +14,10 @@ def get_control(control_id: int, db: Session) -> Optional[ControlDeCalidad]:
     )
 
 
+def listar_controles(db: Session) -> list[ControlDeCalidad]:
+    return db.query(ControlDeCalidad).all()
+
+
 def get_control_por_lote(lote_id: int, db: Session) -> Optional[ControlDeCalidad]:
     return (
         db.query(ControlDeCalidad)
@@ -37,7 +41,8 @@ def crear_control_calidad(
         responsable=responsable,
     )
     db.add(control)
-    db.flush()
+    db.commit()
+    db.refresh(control)
     return control
 
 
@@ -59,10 +64,11 @@ def actualizar_control_calidad(
     if responsable is not None:
         control.responsable = responsable
 
-    db.flush()
+    db.commit()
+    db.refresh(control)
     return control
 
 
 def eliminar_control_calidad_repo(control: ControlDeCalidad, db: Session) -> None:
     db.delete(control)
-    db.flush()
+    db.commit()

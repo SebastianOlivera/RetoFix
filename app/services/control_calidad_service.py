@@ -30,6 +30,14 @@ def crear_control_calidad(payload: ControlCalidadCreate, db: Session) -> Control
     )
 
 
+def listar_controles_calidad(db: Session) -> list[ControlDeCalidad]:
+    return control_calidad_repository.listar_controles(db)
+
+
+def obtener_control_calidad(control_id: int, db: Session) -> Optional[ControlDeCalidad]:
+    return control_calidad_repository.get_control(control_id, db)
+
+
 def actualizar_control_calidad_service(
     control_id: int, payload: ControlCalidadUpdate, db: Session
 ) -> Optional[ControlDeCalidad]:

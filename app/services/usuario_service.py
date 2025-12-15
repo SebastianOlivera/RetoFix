@@ -81,6 +81,11 @@ def update(db: Session, usuarioid: int, payload: UsuarioPatch):
     return usuario_repository.update(db, usuario)
 
 
+def patch(db: Session, usuarioid: int, payload: UsuarioPatch):
+    """Alias de actualización parcial para mantener consistencia con las rutas PATCH."""
+    return update(db, usuarioid, payload)
+
+
 def delete(db: Session, usuarioid: int):
     usuario = get_by_id(db, usuarioid)
     if not usuario:
