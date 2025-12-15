@@ -1,7 +1,7 @@
 import bcrypt
 from sqlalchemy.orm import Session
 from app.repositories.user_repository import create_user, list_users
-from app.schemas.schemas import UserCreate
+from app.schemas.user import UserCreate
 
 
 def crear_usuario(payload: UserCreate, db: Session):

@@ -1,27 +1,28 @@
-from pydantic import BaseModel
 from typing import Optional
 
+from pydantic import BaseModel
 
-# ---------- Base ----------
+
 class CultivoBase(BaseModel):
-    nombre: str
-    descripcion: Optional[str] = None
+    variedad: str
+    practicasagronomicas: Optional[str] = None
+    usofertilizante: Optional[str] = None
+    condicionesclimaticas: Optional[str] = None
 
 
-# ---------- Create ----------
 class CultivoCreate(CultivoBase):
     pass
 
 
-# ---------- Update ----------
 class CultivoUpdate(BaseModel):
-    nombre: Optional[str] = None
-    descripcion: Optional[str] = None
+    variedad: Optional[str] = None
+    practicasagronomicas: Optional[str] = None
+    usofertilizante: Optional[str] = None
+    condicionesclimaticas: Optional[str] = None
 
 
-# ---------- Response ----------
 class CultivoResponse(CultivoBase):
-    id: int
+    cultivoid: int
 
     class Config:
         from_attributes = True
