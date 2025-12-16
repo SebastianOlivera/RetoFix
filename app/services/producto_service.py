@@ -14,6 +14,7 @@ from app.schemas.producto import (
     ProductoUpdatePut,
     ProductoResponse,
 )
+from app.services import minio_service
 
 
 # ========= CRUD =========
@@ -77,11 +78,16 @@ def split_claims(claim: str | None) -> List[str]:
 
 
 def serialize_producto(p) -> ProductoResponse:
+    imagenurl_firmada = None
+    if p.imagenurl:
+        imagenurl_firmada = minio_service.get_presigned_get_url(p.imagenurl)
+
     return ProductoResponse(
         productoid=p.productoid,
         nombrecomercial=p.nombrecomercial,
         descripcion=p.descripcion,
         imagenurl=p.imagenurl,
+        imagenurl_firmada=imagenurl_firmada,
         categoria=p.categoria,
         porciones=p.porciones,
         mododeuso=p.mododeuso,
