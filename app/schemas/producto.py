@@ -41,6 +41,7 @@ class ProductoResponse(BaseModel):
     nombrecomercial: str
     descripcion: Optional[str] = None
     imagenurl: Optional[str] = None
+    imagenurl_firmada: Optional[str] = None
     categoria: Optional[str] = None
     porciones: Optional[int] = None
     mododeuso: Optional[str] = None

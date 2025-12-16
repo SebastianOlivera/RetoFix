@@ -10,3 +10,4 @@ pydantic
 email-validator
 pydantic[email]
 passlib[bcrypt]
+minio
