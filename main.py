@@ -11,6 +11,7 @@ from app.api.routes import (
     qr_routes,
     usuario_routes,
     producto_lote_routes,
+    storage_routes,
 )
 from app.db.connection import Base, engine
 
@@ -37,4 +38,5 @@ app.include_router(info_nutricional_routes.router)
 app.include_router(control_calidad_routes.router)
 app.include_router(qr_routes.router)
 app.include_router(producto_lote_routes.router)
+app.include_router(storage_routes.router)
 
