@@ -61,7 +61,7 @@ def update_campo_patch(db: Session, campoid: int, data: dict):
 
 
 def delete_campo(db: Session, campo: dict):
-    campo_repository.delete(db, campo["campoid"])
+    campo_repository.delete_one(db, campo["campoid"])
 
 
 # =========================

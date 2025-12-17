@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 
 class CultivoBase(BaseModel):
-    variedad: str
+    variedad: Optional[str] = None
     practicasagronomicas: Optional[str] = None
     usofertilizante: Optional[str] = None
     condicionesclimaticas: Optional[str] = None
