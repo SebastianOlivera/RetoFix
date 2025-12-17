@@ -7,10 +7,6 @@ from app.services import campo_service
 router = APIRouter(prefix="/campos", tags=["Campos"])
 
 
-# =========================
-# GET
-# =========================
-
 @router.get("")
 def listar_campos(db: Session = Depends(get_db)):
     return campo_service.get_campos(db)
@@ -20,10 +16,6 @@ def listar_campos(db: Session = Depends(get_db)):
 def obtener_campo(campoid: int, db: Session = Depends(get_db)):
     return campo_service.get_campo(db, campoid)
 
-
-# =========================
-# POST
-# =========================
 
 @router.post("", status_code=status.HTTP_201_CREATED)
 def crear_campo(
@@ -50,10 +42,6 @@ def subir_kmz(
 ):
     campo_service.upload_kmz(db, campoid, file)
 
-
-# =========================
-# PUT / PATCH
-# =========================
 
 @router.put("/{campoid}")
 def actualizar_campo_put(
@@ -100,10 +88,6 @@ def actualizar_campo_patch(
     return campo_service.update_campo_patch(db, campoid, data)
 
 
-# =========================
-# DELETE
-# =========================
-
 @router.delete("/{campoid}", status_code=status.HTTP_204_NO_CONTENT)
 def eliminar_campo(campoid: int, db: Session = Depends(get_db)):
     campo = campo_service.get_campo(db, campoid)
@@ -114,10 +98,6 @@ def eliminar_campo(campoid: int, db: Session = Depends(get_db)):
 def eliminar_kmz(campoid: int, db: Session = Depends(get_db)):
     campo_service.delete_kmz(db, campoid)
 
-
-# =========================
-# DOWNLOAD
-# =========================
 
 @router.get("/{campoid}/kmz")
 def descargar_kmz(campoid: int, db: Session = Depends(get_db)):

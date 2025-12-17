@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
-from app.api.deps import get_db, get_current_user
+from app.api.dependencies import get_db, get_current_user
 from app.schemas.info_nutricional import (
     InfoNutricionalCreate,
     InfoNutricionalUpdate,
