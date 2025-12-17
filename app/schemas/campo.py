@@ -1,5 +1,5 @@
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class CampoBase(BaseModel):
@@ -28,5 +28,4 @@ class CampoResponse(CampoBase):
     campoid: int
     tiene_kmz: bool = False
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

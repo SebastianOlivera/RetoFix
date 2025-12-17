@@ -1,7 +1,7 @@
 from datetime import date
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class LoteCreate(BaseModel):
@@ -28,5 +28,4 @@ class LoteResponse(BaseModel):
     fechaprocesamiento: Optional[date]
     fechavencimiento: Optional[date]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

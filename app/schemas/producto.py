@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class ProductoCreate(BaseModel):
@@ -48,5 +48,4 @@ class ProductoResponse(BaseModel):
     claim: Optional[str] = None
     claims: List[str] = Field(default_factory=list)
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

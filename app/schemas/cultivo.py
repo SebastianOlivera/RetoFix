@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class CultivoBase(BaseModel):
@@ -24,5 +24,4 @@ class CultivoUpdate(BaseModel):
 class CultivoResponse(CultivoBase):
     cultivoid: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
