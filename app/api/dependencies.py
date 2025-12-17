@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.core.auth import verificar_token
 from app.db.connection import SessionLocal
-from app.services import usuario_service
+from app.services import token_service, usuario_service
 
 _bearer = HTTPBearer(auto_error=False)
 
@@ -42,6 +42,13 @@ def get_current_user(
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Token invalido"
         ) from exc
+
+    jti = payload.get("jti")
+    if jti and token_service.is_token_revoked(db, jti):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token revocado",
+        )
 
     user_id = payload.get("sub")
     if not user_id:
