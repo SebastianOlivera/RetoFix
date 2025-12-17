@@ -72,5 +72,6 @@ def get_current_user(
         )
 
     request.state.user = user
+    request.state.user_id = user.usuarioid
     request.state.token_payload = payload
     return user
