@@ -77,9 +77,22 @@ def patch(db: Session, usuario_id: int, payload: UsuarioPatch) -> Usuario:
 
 def authenticate(db: Session, mail: str, password: str) -> Usuario:
     user = db.query(Usuario).filter(Usuario.mail == mail).first()
-    if not user or not verify_password(password, user.passwordhash):
+    if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Credenciales invalidas",
         )
-    return user
+
+    if verify_password(password, user.passwordhash):
+        return user
+
+    if user.passwordhash == password:
+        user.passwordhash = get_password_hash(password)
+        db.commit()
+        db.refresh(user)
+        return user
+
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Credenciales invalidas",
+    )

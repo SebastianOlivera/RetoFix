@@ -30,6 +30,8 @@ def login(payload: UsuarioLogin, db: Session = Depends(get_db)):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error interno al iniciar sesion",
         ) from exc
+
+    token_service.revoke_user_tokens(db, usuario_id=user.usuarioid)
     claims = {"sub": str(user.usuarioid), "mail": user.mail, "rol": user.rol}
     token = crear_token(claims)
     return TokenResponse(
@@ -74,6 +76,17 @@ def validate_token(body: TokenValidationRequest, db: Session = Depends(get_db)):
         return TokenValidationResult(valid=False, reason="Token expirado")
     except InvalidTokenError:
         return TokenValidationResult(valid=False, reason="Token invalido")
-    if token_service.is_token_revoked(db, payload.get("jti")):
+    user_id = payload.get("sub")
+    try:
+        user_id_int = int(user_id) if user_id is not None else None
+    except (TypeError, ValueError):
+        user_id_int = None
+
+    if token_service.is_token_revoked(
+        db,
+        payload.get("jti"),
+        usuario_id=user_id_int,
+        issued_at=payload.get("iat"),
+    ):
         return TokenValidationResult(valid=False, reason="Token revocado")
     return TokenValidationResult(valid=True, payload=payload)

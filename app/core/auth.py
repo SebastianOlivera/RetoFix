@@ -72,8 +72,9 @@ def crear_token(
     """Crea un JWT y cifra campos sensibles antes de firmarlo."""
     to_encode = data.copy()
     minutes = exp_minutes if exp_minutes is not None else ACCESS_TOKEN_MINUTES
-    expire = datetime.now(timezone.utc) + timedelta(minutes=minutes)
-    to_encode.update({"exp": expire, "jti": str(uuid4())})
+    now = datetime.now(timezone.utc)
+    expire = now + timedelta(minutes=minutes)
+    to_encode.update({"exp": expire, "iat": now, "jti": str(uuid4())})
 
     sensitive_data = _extract_sensitive_fields(to_encode, sensitive_fields)
     if sensitive_data:
