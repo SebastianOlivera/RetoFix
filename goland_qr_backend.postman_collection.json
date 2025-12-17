@@ -7,7 +7,31 @@
   "variable": [
     {
       "key": "baseUrl",
-      "value": "{{protocol}}://{{host}}:{{port}}"
+      "value": "https://goland-qr-backend-new.reto-ucu.net"
+    },
+    {
+      "key": "usuarioId",
+      "value": "1"
+    },
+    {
+      "key": "productoid",
+      "value": "1"
+    },
+    {
+      "key": "loteid",
+      "value": "1"
+    },
+    {
+      "key": "cultivoid",
+      "value": "1"
+    },
+    {
+      "key": "campoid",
+      "value": "1"
+    },
+    {
+      "key": "sampleFileName",
+      "value": "example.png"
     }
   ],
   "item": [
@@ -43,9 +67,9 @@
               "raw": "{\n  \"file\": \"{{sampleFileName}}\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/generarPutURL",
+              "raw": "{{baseUrl}}/archivos/generar-url",
               "host": ["{{baseUrl}}"],
-              "path": ["generarPutURL"]
+              "path": ["archivos", "generar-url"]
             }
           }
         }
@@ -63,12 +87,12 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"mail\": \"admin@example.com\",\n  \"rol\": \"admin\",\n  \"password\": \"secreto123\"\n}"
+              "raw": "{\n  \"mail\": \"admin-{{$timestamp}}@example.com\",\n  \"rol\": \"admin\",\n  \"password\": \"secreto123\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/usuarios/",
+              "raw": "{{baseUrl}}/usuarios",
               "host": ["{{baseUrl}}"],
-              "path": ["usuarios", ""]
+              "path": ["usuarios"]
             }
           }
         },
@@ -78,9 +102,9 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/usuarios/",
+              "raw": "{{baseUrl}}/usuarios",
               "host": ["{{baseUrl}}"],
-              "path": ["usuarios", ""]
+              "path": ["usuarios"]
             }
           }
         },

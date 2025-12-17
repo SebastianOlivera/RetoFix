@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
-from app.api.dependencies import get_db
+from app.api.deps import get_db, get_current_user
 from app.schemas.info_nutricional import (
     InfoNutricionalCreate,
     InfoNutricionalUpdate,
@@ -11,8 +11,11 @@ from app.schemas.info_nutricional import (
 )
 from app.services import info_nutricional_service
 
-router = APIRouter(prefix="/info-nutricional", tags=["Info Nutricional"])
-
+router = APIRouter(
+    prefix="/info-nutricional",
+    tags=["Info Nutricional"],
+    dependencies=[Depends(get_current_user)],
+)
 
 @router.post("/", response_model=InfoNutricionalResponse, status_code=status.HTTP_201_CREATED)
 def crear_info_nutricional(payload: InfoNutricionalCreate, db: Session = Depends(get_db)):

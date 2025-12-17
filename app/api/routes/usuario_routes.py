@@ -1,11 +1,15 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app.api.dependencies import get_db
+from app.api.deps import get_db, get_current_user
 from app.schemas import UsuarioCreate, UsuarioOut, UsuarioUpdatePut, UsuarioPatch
 from app.services import usuario_service
 
-router = APIRouter(prefix="/usuarios", tags=["Usuarios"])
+router = APIRouter(
+    prefix="/usuarios",
+    tags=["Usuarios"],
+    dependencies=[Depends(get_current_user)],
+)
 
 @router.post("/", response_model=UsuarioOut, status_code=201)
 def crear_usuario(payload: UsuarioCreate, db: Session = Depends(get_db)):

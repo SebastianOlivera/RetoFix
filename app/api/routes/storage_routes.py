@@ -4,10 +4,10 @@ from app.schemas.storage import PresignedPutRequest, PresignedUrlResponse
 from app.services import minio_service
 
 
-router = APIRouter(tags=["Archivos"])
+router = APIRouter(prefix="/archivos", tags=["Archivos"])
 
 
-@router.post("/generarPutURL", response_model=PresignedUrlResponse)
+@router.post("/generar-url", response_model=PresignedUrlResponse)
 def generar_put_url(payload: PresignedPutRequest):
     try:
         url = minio_service.get_presigned_put_url(payload.file)

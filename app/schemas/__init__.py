@@ -5,6 +5,13 @@ from .usuario import (
     UsuarioPatch,
     UsuarioOut,
 )
+from .auth import (
+    UsuarioLogin,
+    TokenResponse,
+    TokenValidationRequest,
+    TokenValidationResult,
+)
+from .audit import ActionLogCreate, ActionLogResponse
 from .producto import (
     ProductoCreate,
     ProductoUpdate,
@@ -35,6 +42,12 @@ __all__ = [
     "UsuarioUpdatePut",
     "UsuarioPatch",
     "UsuarioOut",
+    "UsuarioLogin",
+    "TokenResponse",
+    "TokenValidationRequest",
+    "TokenValidationResult",
+    "ActionLogCreate",
+    "ActionLogResponse",
     "ProductoCreate",
     "ProductoUpdate",
     "ProductoUpdatePut",

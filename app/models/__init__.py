@@ -6,6 +6,7 @@ from .control_calidad import ControlDeCalidad
 from .info_nutricional import InfoNutricional
 from .usuario import Usuario
 from .producto_lote import ProductoLotePertenece
+from .document import Document
 
 __all__ = [
     "Campo",
@@ -16,4 +17,5 @@ __all__ = [
     "InfoNutricional",
     "Usuario",
     "ProductoLotePertenece",
+    "Document",
 ]

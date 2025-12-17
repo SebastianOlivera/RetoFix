@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
-from app.api.dependencies import get_db
+from app.api.deps import get_db, get_current_user
 from app.schemas import (
     ProductoCreate,
     ProductoUpdate,
@@ -12,7 +12,11 @@ from app.schemas import (
 )
 from app.services import producto_service as svc
 
-router = APIRouter(prefix="/productos", tags=["Productos"])
+router = APIRouter(
+    prefix="/productos",
+    tags=["Productos"],
+    dependencies=[Depends(get_current_user)],
+)
 
 @router.post("", response_model=ProductoResponse)
 def crear_producto(payload: ProductoCreate, db: Session = Depends(get_db)):

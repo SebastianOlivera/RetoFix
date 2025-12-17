@@ -12,7 +12,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "50001:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
       interval: 5s
@@ -27,12 +27,16 @@ services:
     restart: unless-stopped
     ports:
       - "8000:8000"
+    env_file: .env
     environment:
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_HOST: ${DB_HOST}
       DB_PORT: ${DB_PORT}
       DB_NAME: ${DB_NAME}
+      SECRET_KEY: ${SECRET_KEY}
+      ACCESS_TOKEN_MINUTES: ${ACCESS_TOKEN_MINUTES}
+      AES_KEY: ${AES_KEY}
 
 volumes:
   postgres_data:

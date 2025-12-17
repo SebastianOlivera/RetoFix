@@ -9,11 +9,11 @@ metadata:
   name: qr-backend-config
   namespace: goland-qr
 data:
-  DB_HOST: "postgres-goland-qr"
-  DB_PORT: "5432"
-  DB_NAME: "qrdb"
-  DB_USER: "qruser"
-  DB_PASSWORD: "qrpass"
+  DB_HOST: "${DB_HOST}"
+  DB_PORT: "${DB_PORT}"
+  DB_NAME: "${DB_NAME}"
+  DB_USER: "${DB_USER}"
+  DB_PASSWORD: "${DB_PASSWORD}"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -37,11 +37,11 @@ spec:
             - containerPort: 5432
           env:
             - name: POSTGRES_USER
-              value: "qruser"
+              value: "${DB_USER}"
             - name: POSTGRES_PASSWORD
-              value: "qrpass"
+              value: "${DB_PASSWORD}"
             - name: POSTGRES_DB
-              value: "qrdb"
+              value: "${DB_NAME}"
           volumeMounts:
             - name: pgdata
               mountPath: /var/lib/postgresql/data
@@ -133,6 +133,7 @@ spec:
           - goland-qr-backend-new.reto-ucu.net
         paths:
           - "/*"
+          - "/"
       backends:
         - serviceName: qr-backend-svc
           servicePort: 80

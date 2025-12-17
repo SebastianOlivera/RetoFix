@@ -24,8 +24,11 @@ class UsuarioPatch(BaseModel):
     nombre: Optional[str] = None
 
 
-class UsuarioOut(UsuarioBase):
+class UsuarioOut(BaseModel):
     usuarioid: int
+    mail: Optional[str] = None
+    rol: Optional[str] = None
+    nombre: Optional[str] = None
 
     class Config:
         from_attributes = True

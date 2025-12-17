@@ -1,131 +1,94 @@
+from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
-from passlib.context import CryptContext
 
+from app.core.security import get_password_hash, verify_password
 from app.models.usuario import Usuario
-from app.repositories import usuario_repository
-from app.schemas.usuario import UsuarioCreate, UsuarioPatch, UsuarioUpdatePut
-
-# -------------------------------------------------
-# Password hashing
-# - Evitamos bcrypt (límite 72 bytes y problemas de backend en Windows)
-# - pbkdf2_sha256 es estable y soporta passwords largas
-# -------------------------------------------------
-pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
+from app.schemas import UsuarioCreate, UsuarioUpdatePut, UsuarioPatch
 
 
-# -------------------------
-# helpers
-# -------------------------
-def _hash_password(password: str) -> str:
-    if password is None or len(password) == 0:
-        raise ValueError("Password requerido")
-    return pwd_context.hash(password)
+def _ensure_unique_mail(db: Session, mail: str, usuario_id: int | None = None) -> None:
+    query = db.query(Usuario).filter(Usuario.mail == mail)
+    if usuario_id:
+        query = query.filter(Usuario.usuarioid != usuario_id)
+    if query.first():
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="El mail ya esta registrado",
+        )
 
 
-def _verify_password(plain: str, hashed: str) -> bool:
-    if not plain or not hashed:
-        return False
-    return pwd_context.verify(plain, hashed)
+def _apply_password_if_needed(user: Usuario, password: str | None) -> None:
+    if password:
+        user.passwordhash = get_password_hash(password)
 
 
-# -------------------------
-# queries
-# -------------------------
-def list_all(db: Session):
-    return usuario_repository.list_all(db)
+def create(db: Session, payload: UsuarioCreate) -> Usuario:
+    _ensure_unique_mail(db, payload.mail)
+    user = Usuario(mail=payload.mail, rol=payload.rol, nombre=payload.nombre)
+    _apply_password_if_needed(user, payload.password)
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
 
 
-def get_by_id(db: Session, usuarioid: int):
-    return usuario_repository.get_by_id(db, usuarioid)
+def list_all(db: Session) -> list[Usuario]:
+    return db.query(Usuario).order_by(Usuario.usuarioid).all()
 
 
-def get_by_mail(db: Session, mail: str):
-    return usuario_repository.get_by_mail(db, mail)
+def get_by_id(db: Session, usuario_id: int) -> Usuario | None:
+    return db.query(Usuario).filter(Usuario.usuarioid == usuario_id).first()
 
 
-# -------------------------
-# commands
-# -------------------------
-def create(db: Session, payload: UsuarioCreate):
-    # evitar mails duplicados
-    if get_by_mail(db, payload.mail):
-        raise ValueError("El mail ya existe")
-
-    usuario = Usuario(
-        mail=payload.mail,
-        rol=payload.rol,
-        passwordhash=_hash_password(payload.password),
-        nombre=payload.nombre,
-    )
-
-    return usuario_repository.create(db, usuario)
+def get_by_mail(db: Session, mail: str) -> Usuario | None:
+    return db.query(Usuario).filter(Usuario.mail == mail).first()
 
 
-def update(db: Session, usuarioid: int, payload: UsuarioPatch):
-    usuario = get_by_id(db, usuarioid)
-    if not usuario:
-        return None
+def update_put(db: Session, usuario_id: int, payload: UsuarioUpdatePut) -> Usuario:
+    user = get_by_id(db, usuario_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    _ensure_unique_mail(db, payload.mail, usuario_id=usuario_id)
+    user.mail = payload.mail
+    user.rol = payload.rol
+    _apply_password_if_needed(user, payload.password)
+    db.commit()
+    db.refresh(user)
+    return user
 
-    if payload.mail is not None:
-        # si cambia el mail, validar duplicados
-        existente = get_by_mail(db, payload.mail)
-        if existente and existente.usuarioid != usuarioid:
-            raise ValueError("El mail ya existe")
-        usuario.mail = payload.mail
+
+def patch(db: Session, usuario_id: int, payload: UsuarioPatch) -> Usuario:
+    user = get_by_id(db, usuario_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+    if payload.mail is not None and payload.mail != user.mail:
+        _ensure_unique_mail(db, payload.mail, usuario_id=usuario_id)
+        user.mail = payload.mail
 
     if payload.rol is not None:
-        usuario.rol = payload.rol
+        user.rol = payload.rol
 
-    if payload.password is not None:
-        usuario.passwordhash = _hash_password(payload.password)
+    _apply_password_if_needed(user, payload.password)
 
-    if payload.nombre is not None:
-        usuario.nombre = payload.nombre
-
-    return usuario_repository.update(db, usuario)
+    db.commit()
+    db.refresh(user)
+    return user
 
 
-def patch(db: Session, usuarioid: int, payload: UsuarioPatch):
-    """Alias de actualización parcial para mantener consistencia con las rutas PATCH."""
-    return update(db, usuarioid, payload)
+def delete(db: Session, usuario_id: int) -> None:
+    user = get_by_id(db, usuario_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    db.delete(user)
+    db.commit()
 
 
-def delete(db: Session, usuarioid: int):
-    usuario = get_by_id(db, usuarioid)
-    if not usuario:
-        return False
-
-    usuario_repository.delete(db, usuario)
-    return True
-
-
-# opcional (por si después hacés login)
-def authenticate(db: Session, mail: str, password: str):
-    u = get_by_mail(db, mail)
-    if not u:
-        return None
-    if not _verify_password(password, u.passwordhash):
-        return None
-    return u
-
-def update_put(db: Session, usuarioid: int, payload: UsuarioUpdatePut):
-    """
-    PUT = reemplazo completo.
-    En tu schema UsuarioUpdatePut hereda de UsuarioCreate, así que trae:
-    mail (required), rol (required), password (required)
-    """
-    usuario = get_by_id(db, usuarioid)
-    if not usuario:
-        return None
-
-    # validar duplicados si cambia el mail
-    existente = get_by_mail(db, payload.mail)
-    if existente and existente.usuarioid != usuarioid:
-        raise ValueError("El mail ya existe")
-
-    usuario.mail = payload.mail
-    usuario.rol = payload.rol
-    usuario.passwordhash = _hash_password(payload.password)
-    usuario.nombre = payload.nombre
-
-    return usuario_repository.update(db, usuario)
+def authenticate(db: Session, mail: str, password: str) -> Usuario:
+    user = db.query(Usuario).filter(Usuario.mail == mail).first()
+    if not user or not verify_password(password, user.passwordhash):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Credenciales invalidas",
+        )
+    return user
