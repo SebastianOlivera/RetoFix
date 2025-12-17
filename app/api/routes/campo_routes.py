@@ -29,7 +29,7 @@ def crear_campo(
 @router.post("/{campoid}/kmz", status_code=status.HTTP_204_NO_CONTENT)
 def subir_kmz(
     campoid: int,
-    file: UploadFile = File(...),
+    file: UploadFile | None = File(default=None),
     db: Session = Depends(get_db),
 ):
     campo_service.upload_kmz(db, campoid, file)

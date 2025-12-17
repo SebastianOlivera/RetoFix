@@ -1,6 +1,7 @@
 import logging
 
 from fastapi import FastAPI, Request
+from sqlalchemy.orm.exc import DetachedInstanceError
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes import (
@@ -53,8 +54,16 @@ Base.metadata.create_all(bind=engine)
 @app.middleware("http")
 async def audit_middleware(request: Request, call_next):
     response = await call_next(request)
-    user = getattr(request.state, "user", None)
-    if user:
+    user_id = getattr(request.state, "user_id", None)
+    if user_id is None:
+        token_payload = getattr(request.state, "token_payload", {}) or {}
+        user_id = token_payload.get("sub")
+        try:
+            user_id = int(user_id) if user_id is not None else None
+        except (TypeError, ValueError, DetachedInstanceError):
+            user_id = None
+
+    if user_id is not None:
         endpoint = request.scope.get("endpoint")
         action_name = endpoint.__name__ if endpoint else None
         client = request.client.host if request.client else None
@@ -62,7 +71,7 @@ async def audit_middleware(request: Request, call_next):
         try:
             audit_service.log_action(
                 db,
-                usuario_id=user.usuarioid,
+                usuario_id=user_id,
                 path=request.url.path,
                 method=request.method,
                 status_code=response.status_code,

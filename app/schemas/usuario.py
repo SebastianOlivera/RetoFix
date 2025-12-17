@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr
 
 
 class UsuarioBase(BaseModel):
@@ -30,5 +30,4 @@ class UsuarioOut(BaseModel):
     rol: Optional[str] = None
     nombre: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

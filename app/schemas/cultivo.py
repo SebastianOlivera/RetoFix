@@ -1,10 +1,10 @@
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class CultivoBase(BaseModel):
-    variedad: str
+    variedad: Optional[str] = None
     practicasagronomicas: Optional[str] = None
     usofertilizante: Optional[str] = None
     condicionesclimaticas: Optional[str] = None
@@ -24,5 +24,4 @@ class CultivoUpdate(BaseModel):
 class CultivoResponse(CultivoBase):
     cultivoid: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

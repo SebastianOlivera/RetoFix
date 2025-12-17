@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class CodigoQRResponse(BaseModel):
@@ -9,5 +9,4 @@ class CodigoQRResponse(BaseModel):
     lote_id: int
     qr_image_path: Optional[str]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
