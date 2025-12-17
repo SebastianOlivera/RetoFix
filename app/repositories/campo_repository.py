@@ -1,106 +1,153 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import text
+from sqlalchemy import select, update, delete, func, literal, case
+
+from app.models.campo import Campo  # ajustá el import a tu estructura
 
 
 def list_with_kmz_flag(db: Session):
-    sql = text("""
-        SELECT
-            campoid,
-            nombre,
-            departamento,
-            tipomanejo,
-            coordenadas,
-            (archivokmz IS NOT NULL) AS tiene_kmz
-        FROM campo
-        ORDER BY campoid
-    """)
-    rows = db.execute(sql).mappings().all()
+    stmt = (
+        select(
+            Campo.campoid,
+            Campo.nombre,
+            Campo.departamento,
+            Campo.tipomanejo,
+            Campo.coordenadas,
+            (Campo.archivokmz.is_not(None)).label("tiene_kmz"),
+        )
+        .order_by(Campo.campoid)
+    )
+
+    rows = db.execute(stmt).mappings().all()
     return [dict(r) for r in rows]
 
 
 def get_one_with_kmz_flag(db: Session, campoid: int):
-    sql = text("""
-        SELECT
-            campoid,
-            nombre,
-            departamento,
-            tipomanejo,
-            coordenadas,
-            (archivokmz IS NOT NULL) AS tiene_kmz
-        FROM campo
-        WHERE campoid = :campoid
-        LIMIT 1
-    """)
-    row = db.execute(sql, {"campoid": campoid}).mappings().first()
+    stmt = (
+        select(
+            Campo.campoid,
+            Campo.nombre,
+            Campo.departamento,
+            Campo.tipomanejo,
+            Campo.coordenadas,
+            (Campo.archivokmz.is_not(None)).label("tiene_kmz"),
+        )
+        .where(Campo.campoid == campoid)
+        .limit(1)
+    )
+
+    row = db.execute(stmt).mappings().first()
     return dict(row) if row else None
 
 
 def get_raw_kmz(db: Session, campoid: int):
-    sql = text("SELECT archivokmz FROM campo WHERE campoid = :campoid LIMIT 1")
-    return db.execute(sql, {"campoid": campoid}).scalar()
+    stmt = (
+        select(Campo.archivokmz)
+        .where(Campo.campoid == campoid)
+        .limit(1)
+    )
+    return db.execute(stmt).scalar_one_or_none()
 
 
 def set_kmz(db: Session, campoid: int, kmz_value):
-    sql = text("UPDATE campo SET archivokmz = :kmz WHERE campoid = :campoid")
-    db.execute(sql, {"kmz": kmz_value, "campoid": campoid})
+    stmt = (
+        update(Campo)
+        .where(Campo.campoid == campoid)
+        .values(archivokmz=kmz_value)
+    )
+    db.execute(stmt)
     db.commit()
 
 
 def exists(db: Session, campoid: int) -> bool:
-    sql = text("SELECT 1 FROM campo WHERE campoid = :campoid LIMIT 1")
-    return db.execute(sql, {"campoid": campoid}).scalar() is not None
+    stmt = select(Campo.campoid).where(Campo.campoid == campoid).limit(1)
+    return db.execute(stmt).first() is not None
 
 
 # ===== CRUD base =====
 
 def create(db: Session, data: dict):
-    sql = text("""
-        INSERT INTO campo (nombre, departamento, tipomanejo, coordenadas)
-        VALUES (:nombre, :departamento, :tipomanejo, :coordenadas)
-        RETURNING campoid, nombre, departamento, tipomanejo, coordenadas
-    """)
-    row = db.execute(sql, data).mappings().first()
+    obj = Campo(
+        nombre=data.get("nombre"),
+        departamento=data.get("departamento"),
+        tipomanejo=data.get("tipomanejo"),
+        coordenadas=data.get("coordenadas"),
+    )
+    db.add(obj)
     db.commit()
-    return dict(row)
+    db.refresh(obj)
+
+    # Igual que tu RETURNING (sin archivokmz)
+    return {
+        "campoid": obj.campoid,
+        "nombre": obj.nombre,
+        "departamento": obj.departamento,
+        "tipomanejo": obj.tipomanejo,
+        "coordenadas": obj.coordenadas,
+    }
 
 
 def update_put(db: Session, campoid: int, data: dict):
-    data["campoid"] = campoid
-    sql = text("""
-        UPDATE campo
-        SET nombre=:nombre,
-            departamento=:departamento,
-            tipomanejo=:tipomanejo,
-            coordenadas=:coordenadas,
-            archivokmz=:archivokmz
-        WHERE campoid=:campoid
-        RETURNING campoid, nombre, departamento, tipomanejo, coordenadas
-    """)
-    row = db.execute(sql, data).mappings().first()
+    # PUT: reemplaza todo
+    stmt = (
+        update(Campo)
+        .where(Campo.campoid == campoid)
+        .values(
+            nombre=data.get("nombre"),
+            departamento=data.get("departamento"),
+            tipomanejo=data.get("tipomanejo"),
+            coordenadas=data.get("coordenadas"),
+            archivokmz=data.get("archivokmz"),
+        )
+        .returning(
+            Campo.campoid,
+            Campo.nombre,
+            Campo.departamento,
+            Campo.tipomanejo,
+            Campo.coordenadas,
+        )
+    )
+
+    row = db.execute(stmt).mappings().first()
     if not row:
+        db.rollback()
         raise Exception("Campo no encontrado")
+
     db.commit()
     return dict(row)
 
 
 def update_patch(db: Session, campoid: int, data: dict):
-    sets = ", ".join(f"{k}=:{k}" for k in data.keys())
-    data["campoid"] = campoid
+    # PATCH: solo campos presentes (evita SQL raw)
+    allowed = {"nombre", "departamento", "tipomanejo", "coordenadas", "archivokmz"}
+    values = {k: v for k, v in data.items() if k in allowed}
 
-    sql = text(f"""
-        UPDATE campo
-        SET {sets}
-        WHERE campoid=:campoid
-        RETURNING campoid, nombre, departamento, tipomanejo, coordenadas
-    """)
-    row = db.execute(sql, data).mappings().first()
+    if not values:
+        # nada para actualizar; devolvemos el campo actual (o None)
+        return get_one_with_kmz_flag(db, campoid)
+
+    stmt = (
+        update(Campo)
+        .where(Campo.campoid == campoid)
+        .values(**values)
+        .returning(
+            Campo.campoid,
+            Campo.nombre,
+            Campo.departamento,
+            Campo.tipomanejo,
+            Campo.coordenadas,
+        )
+    )
+
+    row = db.execute(stmt).mappings().first()
     if not row:
+        db.rollback()
         raise Exception("Campo no encontrado")
+
     db.commit()
     return dict(row)
 
 
-def delete(db: Session, campoid: int):
-    sql = text("DELETE FROM campo WHERE campoid = :campoid")
-    db.execute(sql, {"campoid": campoid})
+def delete_one(db: Session, campoid: int):
+    stmt = delete(Campo).where(Campo.campoid == campoid)
+    db.execute(stmt)
     db.commit()

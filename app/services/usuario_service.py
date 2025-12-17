@@ -75,15 +75,6 @@ def patch(db: Session, usuario_id: int, payload: UsuarioPatch) -> Usuario:
     db.refresh(user)
     return user
 
-
-def delete(db: Session, usuario_id: int) -> None:
-    user = get_by_id(db, usuario_id)
-    if not user:
-        raise HTTPException(status_code=404, detail="Usuario no encontrado")
-    db.delete(user)
-    db.commit()
-
-
 def authenticate(db: Session, mail: str, password: str) -> Usuario:
     user = db.query(Usuario).filter(Usuario.mail == mail).first()
     if not user or not verify_password(password, user.passwordhash):

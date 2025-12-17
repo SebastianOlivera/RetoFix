@@ -6,7 +6,7 @@ from jwt import ExpiredSignatureError, InvalidTokenError
 from sqlalchemy.orm import Session
 
 from app.core.auth import verificar_token
-from app.database import SessionLocal
+from app.db.connection import SessionLocal
 from app.services import usuario_service
 
 _bearer = HTTPBearer(auto_error=False)

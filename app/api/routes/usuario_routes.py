@@ -48,10 +48,3 @@ def actualizar_parcial(usuario_id: int, payload: UsuarioPatch, db: Session = Dep
     if not u:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     return u
-
-@router.delete("/{usuario_id}", status_code=204)
-def borrar_usuario(usuario_id: int, db: Session = Depends(get_db)):
-    ok = usuario_service.delete(db, usuario_id)
-    if not ok:
-        raise HTTPException(status_code=404, detail="Usuario no encontrado")
-    return None

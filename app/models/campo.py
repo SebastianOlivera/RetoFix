@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, LargeBinary
 from app.db.connection import Base
 
 
@@ -10,4 +10,4 @@ class Campo(Base):
     departamento = Column(String, nullable=False)
     tipomanejo = Column(String, nullable=False)
     coordenadas = Column(String, nullable=False)
-    archivokmz = Column(String, nullable=True)
+    archivokmz = Column(LargeBinary, nullable=True)

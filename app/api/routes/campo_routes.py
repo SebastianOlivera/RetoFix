@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends, UploadFile, File, Form, Response, status
+from fastapi import APIRouter, Depends, UploadFile, File, Response, status
 from sqlalchemy.orm import Session
 
 from app.api.dependencies import get_db
 from app.services import campo_service
+from app.schemas.campo import CampoCreate, CampoUpdatePut, CampoPatch  # <- agregá estos schemas
 
 router = APIRouter(prefix="/campos", tags=["Campos"])
 
@@ -19,19 +20,10 @@ def obtener_campo(campoid: int, db: Session = Depends(get_db)):
 
 @router.post("", status_code=status.HTTP_201_CREATED)
 def crear_campo(
-    nombre: str = Form(...),
-    departamento: str = Form(...),
-    tipomanejo: str = Form(...),
-    coordenadas: str | None = Form(None),
+    payload: CampoCreate,
     db: Session = Depends(get_db),
 ):
-    data = {
-        "nombre": nombre,
-        "departamento": departamento,
-        "tipomanejo": tipomanejo,
-        "coordenadas": coordenadas,
-    }
-    return campo_service.create_campo(db, data)
+    return campo_service.create_campo(db, payload.model_dump())
 
 
 @router.post("/{campoid}/kmz", status_code=status.HTTP_204_NO_CONTENT)
@@ -46,45 +38,19 @@ def subir_kmz(
 @router.put("/{campoid}")
 def actualizar_campo_put(
     campoid: int,
-    nombre: str,
-    departamento: str,
-    tipomanejo: str,
-    coordenadas: str | None = None,
-    archivokmz: str | None = None,
+    payload: CampoUpdatePut,
     db: Session = Depends(get_db),
 ):
-    data = {
-        "nombre": nombre,
-        "departamento": departamento,
-        "tipomanejo": tipomanejo,
-        "coordenadas": coordenadas,
-        "archivokmz": archivokmz,
-    }
-    return campo_service.update_campo_put(db, campoid, data)
+    return campo_service.update_campo_put(db, campoid, payload.model_dump())
 
 
 @router.patch("/{campoid}")
 def actualizar_campo_patch(
     campoid: int,
-    nombre: str | None = None,
-    departamento: str | None = None,
-    tipomanejo: str | None = None,
-    coordenadas: str | None = None,
-    archivokmz: str | None = None,
+    payload: CampoPatch,
     db: Session = Depends(get_db),
 ):
-    data = {
-        k: v
-        for k, v in {
-            "nombre": nombre,
-            "departamento": departamento,
-            "tipomanejo": tipomanejo,
-            "coordenadas": coordenadas,
-            "archivokmz": archivokmz,
-        }.items()
-        if v is not None
-    }
-
+    data = payload.model_dump(exclude_unset=True)
     return campo_service.update_campo_patch(db, campoid, data)
 
 
@@ -105,7 +71,5 @@ def descargar_kmz(campoid: int, db: Session = Depends(get_db)):
     return Response(
         content=kmz_bytes,
         media_type="application/vnd.google-earth.kmz",
-        headers={
-            "Content-Disposition": f'attachment; filename="campo_{campoid}.kmz"'
-        },
+        headers={"Content-Disposition": f'attachment; filename="campo_{campoid}.kmz"'},
     )

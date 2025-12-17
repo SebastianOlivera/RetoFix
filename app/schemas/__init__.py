@@ -20,7 +20,7 @@ from .producto import (
 )
 from .lote import LoteCreate, LoteUpdate, LoteResponse
 from .codigo_qr import CodigoQRResponse
-from .campo import CampoBase, CampoCreate, CampoUpdate, CampoResponse
+from .campo import CampoBase, CampoCreate, CampoUpdatePut, CampoPatch, CampoResponse
 from .info_nutricional import (
     InfoNutricionalBase,
     InfoNutricionalCreate,
@@ -58,7 +58,8 @@ __all__ = [
     "CodigoQRResponse",
     "CampoBase",
     "CampoCreate",
-    "CampoUpdate",
+    "CampoUpdatePut",
+    "CampoPatch",
     "CampoResponse",
     "InfoNutricionalBase",
     "InfoNutricionalCreate",
