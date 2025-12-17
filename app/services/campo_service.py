@@ -68,11 +68,17 @@ def delete_campo(db: Session, campo: dict):
 # KMZ
 # =========================
 
-def upload_kmz(db: Session, campoid: int, file: UploadFile):
+def upload_kmz(db: Session, campoid: int, file: UploadFile | None):
     if not campo_repository.exists(db, campoid):
         raise HTTPException(status_code=404, detail="Campo no encontrado")
 
+    if file is None:
+        raise HTTPException(status_code=400, detail="Archivo KMZ requerido")
+
     kmz_bytes = file.file.read()
+    if not kmz_bytes:
+        raise HTTPException(status_code=400, detail="El archivo KMZ está vacío")
+
     campo_repository.set_kmz(db, campoid, kmz_bytes)
 
 
