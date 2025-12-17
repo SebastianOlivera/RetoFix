@@ -1,14 +1,20 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, status
 
 from app.schemas.storage import PresignedPutRequest, PresignedUrlResponse
 from app.services import minio_service
 
 
-router = APIRouter(prefix="/archivos", tags=["Archivos"])
+router = APIRouter(tags=["Archivos"])
 
 
-@router.post("/generar-url", response_model=PresignedUrlResponse)
+@router.post(
+    "/generarPutURL",
+    status_code=status.HTTP_200_OK,
+    response_model=PresignedUrlResponse,
+)
 def generar_put_url(payload: PresignedPutRequest):
+    """Genera una URL presignada de carga en MinIO para el archivo indicado."""
+
     try:
         url = minio_service.get_presigned_put_url(payload.file)
     except ValueError as exc:
