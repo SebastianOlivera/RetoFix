@@ -1,5 +1,6 @@
 from uuid import UUID
 from fastapi import APIRouter, Depends, UploadFile, File, Query, HTTPException
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
 from app.api.dependencies import get_db
@@ -24,12 +25,8 @@ def get_single_doc(id: UUID, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Documento no encontrado")
     return doc
 
-from fastapi.responses import StreamingResponse
-
 @router.get("/get/{id}/doc")
 def get_pdf(id: UUID, download: bool = False):
-    # acá después conectás MinIO
-    # por ahora placeholder
     raise HTTPException(status_code=501, detail="MinIO no implementado aún")
 
 @router.post("/create_doc", response_model=DocumentOut)
@@ -41,7 +38,6 @@ def create_doc(
     if file.content_type != "application/pdf":
         raise HTTPException(status_code=400, detail="Solo PDFs")
 
-    # minio_path simulado
     minio_path = f"docs/{file.filename}"
 
     doc = document_service.create_doc(db, filename, minio_path)

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.orm import Session
 
-from app.api.deps import get_current_user, get_db
+from app.api.dependencies import get_current_user, get_db
 from app.schemas import ActionLogCreate, ActionLogResponse
 from app.services import audit_service
 

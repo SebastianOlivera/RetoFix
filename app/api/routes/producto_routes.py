@@ -1,9 +1,8 @@
-# routers/producto_routes.py
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
-from app.api.deps import get_db, get_current_user
+from app.api.dependencies import get_db, get_current_user
 from app.schemas import (
     ProductoCreate,
     ProductoUpdate,
