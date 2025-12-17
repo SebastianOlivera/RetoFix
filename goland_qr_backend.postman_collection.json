@@ -67,9 +67,9 @@
               "raw": "{\n  \"file\": \"{{sampleFileName}}\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/archivos/generar-url",
+              "raw": "{{baseUrl}}/generarPutURL",
               "host": ["{{baseUrl}}"],
-              "path": ["archivos", "generar-url"]
+              "path": ["generarPutURL"]
             }
           }
         }

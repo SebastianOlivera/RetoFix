@@ -1,6 +1,5 @@
 import os
 from datetime import timedelta
-from functools import lru_cache
 from typing import Optional
 
 from dotenv import load_dotenv
@@ -17,19 +16,12 @@ def _get_env(name: str) -> str:
     return value
 
 
-@lru_cache
 def _client() -> Minio:
-    endpoint = _get_env("MINIO_ENDPOINT")
-    access_key = _get_env("MINIO_ACCESS_KEY")
-    secret_key = _get_env("MINIO_SECRET_KEY")
-    secure = os.getenv("MINIO_SECURE", os.getenv("MINIO_USE_SSL", "true"))
-    use_ssl = secure.lower() not in {"0", "false", "no"}
-
     return Minio(
-        endpoint,
-        access_key=access_key,
-        secret_key=secret_key,
-        secure=use_ssl,
+        _get_env("MINIO_ENDPOINT"),
+        access_key=_get_env("MINIO_ACCESS_KEY"),
+        secret_key=_get_env("MINIO_SECRET_KEY"),
+        secure=True,
     )
 
 
@@ -52,7 +44,7 @@ def get_presigned_put_url(
             expires=timedelta(minutes=expires_minutes),
         )
     except S3Error as exc:
-        raise RuntimeError(f"No se pudo generar la URL de carga: {exc}") from exc
+        raise RuntimeError(f"Error generando presigned URL: {exc}") from exc
 
 
 def get_presigned_get_url(
