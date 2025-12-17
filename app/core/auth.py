@@ -4,6 +4,7 @@ import json
 import os
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Iterable, Optional
+from uuid import uuid4
 
 import jwt
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
@@ -71,8 +72,9 @@ def crear_token(
     """Crea un JWT y cifra campos sensibles antes de firmarlo."""
     to_encode = data.copy()
     minutes = exp_minutes if exp_minutes is not None else ACCESS_TOKEN_MINUTES
-    expire = datetime.now(timezone.utc) + timedelta(minutes=minutes)
-    to_encode.update({"exp": expire})
+    now = datetime.now(timezone.utc)
+    expire = now + timedelta(minutes=minutes)
+    to_encode.update({"exp": expire, "iat": now, "jti": str(uuid4())})
 
     sensitive_data = _extract_sensitive_fields(to_encode, sensitive_fields)
     if sensitive_data:

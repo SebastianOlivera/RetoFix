@@ -30,6 +30,7 @@ import app.models.audit_log  # noqa: F401
 import app.models.campo  # noqa: F401
 import app.models.info_nutricional  # noqa: F401
 import app.models.usuario  # noqa: F401
+import app.models.token_revocado  # noqa: F401
 
 logger = logging.getLogger(__name__)
 
