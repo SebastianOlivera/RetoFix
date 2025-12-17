@@ -1,6 +1,7 @@
 import logging
 
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes import (
     audit,
@@ -8,7 +9,6 @@ from app.api.routes import (
     campo_routes,
     control_calidad_routes,
     cultivo_routes,
-    docs_routes,
     info_nutricional_routes,
     lote_routes,
     producto_routes,
@@ -33,7 +33,18 @@ import app.models.usuario  # noqa: F401
 
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="Goland QR Backend")
+app = FastAPI(title="Goland QR API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "https://goland-qr-frontend.reto-ucu.net",
+    ],
+    allow_origin_regex=r"http://localhost:\d+",
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 Base.metadata.create_all(bind=engine)
 

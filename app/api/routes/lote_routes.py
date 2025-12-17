@@ -32,8 +32,6 @@ def actualizar_lote_put(loteid: int, payload: LoteCreate, db: Session = Depends(
     lote = lote_service.get_lote_by_id(db, loteid)
     if not lote:
         raise HTTPException(status_code=404, detail="Lote no encontrado")
-
-    # PUT = reemplazo total (lo que no mandes, queda None)
     lote.campoid = payload.campoid
     lote.fechasiembra = payload.fechasiembra
     lote.fechacosecha = payload.fechacosecha

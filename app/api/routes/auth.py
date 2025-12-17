@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from jwt import ExpiredSignatureError, InvalidTokenError
 
-from app.api.deps import get_db
+from app.api.dependencies import get_db
 from app.core.auth import ACCESS_TOKEN_MINUTES, crear_token, verificar_token
 from app.schemas import (
     TokenResponse,
